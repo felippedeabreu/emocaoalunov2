@@ -52,6 +52,7 @@ if pagina == "Introdução":
 # ---------------------------
 # Página: Base de Dados
 # ---------------------------
+
 elif pagina == "Base de Dados":
     st.header("Base de Dados")
 
@@ -63,28 +64,46 @@ elif pagina == "Base de Dados":
 
     st.write("No futuro, os dados coletados de alunos reais poderão ser integrados.")
 
-    # Exemplo de dataset
     try:
         df = pd.read_csv("alunos_emocoes_100.csv")
 
+        st.subheader("Filtro por Emoção")
+        emocoes_disponiveis = df["expressao"].unique().tolist()
+        emocao_selecionada = st.selectbox("Selecione uma emoção:", ["Todas"] + emocoes_disponiveis)
+
+        # Aplica o filtro
+        if emocao_selecionada == "Todas":
+            df_filtrado = df
+        else:
+            df_filtrado = df[df["expressao"] == emocao_selecionada]
+
+        st.markdown("---")
         st.subheader("Exemplo de Base de Dados")
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df_filtrado, use_container_width=True)
 
         st.markdown("---")
         st.subheader("Distribuição das Emoções")
 
-        # Gráfico de barras com dados reais da coluna 'expressao'
-        contagem_emocoes = df["expressao"].value_counts().reset_index()
+        contagem_emocoes = df_filtrado["expressao"].value_counts().reset_index()
         contagem_emocoes.columns = ["Emoção", "Frequência"]
         st.bar_chart(contagem_emocoes.set_index("Emoção"))
 
         st.markdown("---")
         st.subheader("Estatísticas Descritivas da Base de Dados")
-        st.dataframe(df.describe(), use_container_width=True)
+        st.dataframe(df_filtrado.describe(), use_container_width=True)
 
     except Exception as e:
         st.warning("⚠️ Não foi possível carregar o dataset. Verifique se o arquivo 'alunos_emocoes_100.csv' está na pasta correta.")
         st.text(e)
+
+
+
+
+
+
+
+
+
 
 # ---------------------------
 # Página: Visualizações
